@@ -1,6 +1,9 @@
-import Head from 'next/head'
+import Head from 'next/head';
+import { useSession, signIn, signOut } from 'next-auth/react';
 
 export default function Home() {
+  const { data: session } = useSession();
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2">
       <Head>
@@ -22,7 +25,16 @@ export default function Home() {
             pages/index.js
           </code>
         </p>
-
+        <div className="mt-10">
+          <button
+            className={`mt-10 uppercase text-sm font-bold tracking-wide text-gray-100 p-3 rounded-lg  focus:outline-none focus:shadow-outline hover:shadow-xl active:scale-90 transition duration-150  ${
+              session?.user?.accessToken ? 'bg-red-400' : 'bg-green-400'
+            }`}
+            onClick={() => (session?.user?.accessToken ? signOut() : signIn())}
+          >
+            {session?.user?.accessToken ? 'Sign Out' : 'Sign In'}
+          </button>
+        </div>
         <div className="flex flex-wrap items-center justify-around max-w-4xl mt-6 sm:w-full">
           <a
             href="https://nextjs.org/docs"
@@ -78,5 +90,5 @@ export default function Home() {
         </a>
       </footer>
     </div>
-  )
+  );
 }
