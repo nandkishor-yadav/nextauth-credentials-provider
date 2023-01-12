@@ -1,5 +1,5 @@
-import NextAuth from 'next-auth';
-import CredentialsProvider from 'next-auth/providers/credentials';
+import NextAuth from 'next-auth'
+import CredentialsProvider from 'next-auth/providers/credentials'
 
 export default NextAuth({
   providers: [
@@ -18,38 +18,32 @@ export default NextAuth({
           placeholder: 'jsmith@example.com',
         },
         password: { label: 'Password', type: 'password' },
-        tenantKey: {
-          label: 'Tenant Key',
-          type: 'text',
-        },
       },
       async authorize(credentials, req) {
         const payload = {
           email: credentials.email,
           password: credentials.password,
-        };
+        }
 
-        const res = await fetch('http://localhost:5000/api/tokens', {
+        const res = await fetch('http://localhost:5287/api/tokens', {
           method: 'POST',
           body: JSON.stringify(payload),
           headers: {
             'Content-Type': 'application/json',
-            tenant: credentials.tenantKey,
-            'Accept-Language': 'en-US',
           },
-        });
+        })
 
-        const user = await res.json();
+        const user = await res.json()
         if (!res.ok) {
-          throw new Error(user.exception);
+          throw new Error(user.message)
         }
         // If no error and we have user data, return it
         if (res.ok && user) {
-          return user;
+          return user
         }
 
         // Return null if user data could not be retrieved
-        return null;
+        return null
       },
     }),
     // ...add more providers here
@@ -63,20 +57,20 @@ export default NextAuth({
       if (account && user) {
         return {
           ...token,
-          accessToken: user.data.token,
-          refreshToken: user.data.refreshToken,
-        };
+          accessToken: user.token,
+          refreshToken: user.refreshToken,
+        }
       }
 
-      return token;
+      return token
     },
 
     async session({ session, token }) {
-      session.user.accessToken = token.accessToken;
-      session.user.refreshToken = token.refreshToken;
-      session.user.accessTokenExpires = token.accessTokenExpires;
+      session.user.accessToken = token.accessToken
+      session.user.refreshToken = token.refreshToken
+      session.user.accessTokenExpires = token.accessTokenExpires
 
-      return session;
+      return session
     },
   },
   theme: {
@@ -86,4 +80,4 @@ export default NextAuth({
   },
   // Enable debug messages in the console if you are having problems
   debug: process.env.NODE_ENV === 'development',
-});
+})
